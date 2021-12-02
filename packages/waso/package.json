@@ -1,11 +1,10 @@
 {
   "name": "waso",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Waso is a refined task runner for Node.js.",
   "keywords": [],
   "author": "Linus Parker",
   "license": "MPL-2.0",
-
   "main": "dist/lib/waso.js",
   "bin": {
     "waso": "dist/bin/cli.js"
@@ -15,7 +14,6 @@
     "LICENSE",
     "README.md"
   ],
-
   "scripts": {
     "build": "npx tsc"
   },
