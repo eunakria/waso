@@ -1,0 +1,12 @@
+{
+  "name": "waso-postcss",
+  "version": "0.1.0",
+  "description": "Apply PostCSS transformations to CSS files.",
+  "keywords": [],
+  "author": "Linus Parker",
+  "license": "MPL-2.0",
+  "main": "./src/index.js",
+  "peerDependencies": {
+    "postcss": "^8.4.4"
+  }
+}

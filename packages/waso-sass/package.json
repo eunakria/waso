@@ -1,0 +1,12 @@
+{
+  "name": "waso-sass",
+  "version": "0.1.0",
+  "description": "Transform Sass and SCSS files into CSS files.",
+  "keywords": [],
+  "author": "Linus Parker",
+  "license": "MPL-2.0",
+  "main": "./src/index.js",
+  "peerDependencies": {
+    "sass": "^1.44.0"
+  }
+}

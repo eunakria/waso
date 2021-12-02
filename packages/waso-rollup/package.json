@@ -1,0 +1,12 @@
+{
+  "name": "waso-rollup",
+  "version": "0.1.0",
+  "description": "Bundle JavaScript files with Rollup.",
+  "keywords": [],
+  "author": "Linus Parker",
+  "license": "MPL-2.0",
+  "main": "./src/index.js",
+  "peerDependencies": {
+    "rollup": "^2.60.2"
+  }
+}

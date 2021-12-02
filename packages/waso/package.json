@@ -1,0 +1,32 @@
+{
+  "name": "waso",
+  "version": "0.1.0",
+  "description": "Waso is a refined task runner for Node.js.",
+  "keywords": [],
+  "author": "Linus Parker",
+  "license": "MPL-2.0",
+
+  "main": "dist/lib/waso.js",
+  "bin": {
+    "waso": "dist/bin/cli.js"
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "ansi-colors": "^4.1.1",
+    "glob": "^7.2.0"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
+    "@types/glob": "^7.2.0",
+    "@types/node": "^16.11.10",
+    "typescript": "^4.5.2"
+  }
+}
