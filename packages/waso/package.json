@@ -2,6 +2,8 @@
   "name": "waso",
   "version": "0.2.0",
   "description": "Waso is a refined task runner for Node.js.",
+  "homepage": "https://github.com/eunakria/waso",
+  "repository": "eunakria/waso",
   "keywords": [],
   "author": "Linus Parker",
   "license": "MPL-2.0",
