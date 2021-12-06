@@ -1,0 +1,54 @@
+<====> SKIP
+
+<====> waso.config.js
+const { Waso, Task } = require('waso')
+
+const sass = require('waso-sass')
+const postcss = require('waso-postcss')
+const rollup = require('waso-rollup')
+
+const autoprefixer = require('autoprefixer')
+const cssnano = require('cssnano')
+
+module.exports = new Waso({
+	_js: new Task([
+		Waso.source('src/js/index.js'),
+		Waso.incremental({
+			target: 'dist/js/',
+		}),
+		rollup(),
+		Waso.target('dist/js/'),
+	])
+
+	_css: new Task([
+		Waso.source('src/css/index.scss'),
+		Waso.incremental({
+			target: 'dist/js/',
+			renamer: () => 'index.css',
+		}),
+		sass(),
+		postcss([
+			autoprefixer(),
+			cssnano(),
+		]),
+		Waso.target('dist/css/'),
+	])
+
+	default: Task.series([ '_js', '_css' ]),
+})
+
+<====> src/js/index.js
+import { add } from './add'
+console.log(add(1, 2))
+
+<====> src/js/add.js
+export const add = (a, b) => a + b
+
+<====> src/css/index.scss
+.example {
+	color: red;
+
+	.example2 {
+		color: blue;
+	}
+}

@@ -1,0 +1,140 @@
+<====> waso.config.js
+const { Waso, Task } = require('waso')
+
+function passthrough() {
+	return async function *(files) {
+		for await (const file of files) {
+			yield file
+		}
+	}
+}
+
+function toUppercase() {
+	return async function *(files) {
+		for await (const file of files) {
+			file.content = file.content.toString().toUpperCase()
+			yield file
+		}
+	}
+}
+
+function willFail() {
+	return async function *(files) {
+		throw new Error('I failed')
+	}
+}
+
+module.exports = new Waso({
+	passthrough: new Task([
+		Waso.source('src/test1/*'),
+		passthrough(),
+		Waso.target('dist/test1/'),
+	]),
+
+	uppercase: new Task([
+		Waso.source('src/test2/*'),
+		toUppercase(),
+		Waso.target('dist/test2/'),
+	]),
+
+	default: Task.series([ 'passthrough', 'uppercase' ]),
+	parallel: Task.parallel([ 'passthrough', 'uppercase' ]),
+
+	_shadowed: new Task([]),
+	simple: new Task([]),
+	willFail: new Task([
+		willFail()
+	]),
+})
+
+<====> src/test1/file1.txt
+Hello, world!
+
+<====> src/test1/file2.txt
+This is a test.
+
+<====> src/test2/file1.txt
+Hello, world!
+
+<====> src/test2/file2.txt
+This is a test.
+
+<====> run.js
+const fs = require('fs')
+const test = require('tape')
+
+let originalDir = process.cwd()
+process.chdir(__dirname)
+
+module.exports = new Promise((resolve, reject) => {
+	test('simple api', async t => {
+		t.plan(17)
+
+		const { Waso, Task } = require('waso')
+		t.ok(Waso, 'Waso is defined')
+		t.ok(Task, 'Task is defined')
+
+		let config
+		try {
+			config = require('./waso.config.js')
+			t.pass('Config is loaded')
+		} catch (err) {
+			t.fail('Config is not loaded')
+			t.end()
+		}
+
+		let expectedTasks = [
+			'passthrough', 'uppercase', 'default', 'parallel', 'willFail',
+		]
+		t.notOk(
+			expectedTasks.find(task => !config.tasks[task]),
+			'All tasks are defined'
+		)
+
+		await config.run()
+		t.pass('All tasks ran')
+
+		ensureAll(t)
+		fs.rmSync('dist/', { recursive: true, force: true })
+
+		await config.run('parallel')
+		t.pass('All tasks ran in parallel')
+
+		ensureAll(t)
+		fs.rmSync('dist/', { recursive: true, force: true })
+
+		try {
+			await config.run('willFail')
+			t.fail('Task should have failed')
+		} catch (err) {
+			t.pass('Tasks can fail')
+		}
+
+		try {
+			await config.run('_shadowed')
+			t.pass('Private tasks should not fail')
+		} catch (err) {
+			t.fail('Private task failed')
+		}
+
+		await config.run('simple')
+		t.pass('No-op tasks run')
+
+		function ensureAll(t) {
+			ensureContents(t, 'dist/test1/file1.txt', 'Hello, world!\n')
+			ensureContents(t, 'dist/test1/file2.txt', 'This is a test.\n')
+			ensureContents(t, 'dist/test2/file1.txt', 'HELLO, WORLD!\n')
+			ensureContents(t, 'dist/test2/file2.txt', 'THIS IS A TEST.\n')
+		}
+		function ensureContents(t, file, expected) {
+			t.equal(
+				fs.readFileSync(file, 'utf8'),
+				expected,
+				`${file} exists has expected contents`
+			)
+		}
+	}).on('end', () => {
+		process.chdir(originalDir)
+		resolve()
+	})
+})
