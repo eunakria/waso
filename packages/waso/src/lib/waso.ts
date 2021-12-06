@@ -7,7 +7,7 @@ import Transformers from './transformers'
 
 type TaskList = { [key: string]: Task }
 
-interface Logger {
+export interface Logger {
 	info(...args: any[]): void
 	error(...args: any[]): void
 	warn(...args: any[]): void
@@ -76,6 +76,7 @@ class Waso {
 		))
 	}
 
+	public static source = Transformers.source
 	public static incremental = Transformers.incremental
 	public static renamer = Transformers.renamer
 	public static flatten = Transformers.flatten
@@ -83,13 +84,13 @@ class Waso {
 	public static concat = Transformers.concat
 }
 
-type File = {
+export type File = {
 	path: string
 	content: Buffer | string
 }
-type Options = {
+export type Options = {
 	logger: Logger | null
-	sourceGlob: string | null
+	sourceGlob: string[]
 }
 type Transformer =
 	(input: AsyncGenerator<File>, options?: Options) => AsyncGenerator<File>
@@ -100,78 +101,36 @@ class Task {
 	private options: Options
 	private action: (() => Promise<void>) | null
 
-	constructor() {
+	constructor(steps: Transformer[] = []) {
 		this.wasoInstance = null
-		this.steps = []
+		this.steps = steps
 		this.options = {
 			logger: null,
-			sourceGlob: null,
+			sourceGlob: [],
 		}
 		this.action = null
 	}
 
-	/**
-	 * Read files from a glob pattern and send them into the pipeline.
-	 */
-	source(glob: string) {
-		if (this.action !== null) {
-			throw new Error('Cannot read files after series() or parallel()')
-		}
-		if (this.steps.length > 0) {
-			throw new Error('source() must be the first step in a task')
-		}
-
-		this.options.sourceGlob = glob
-		this.steps.push(async function* sourceTransformer() {
-			for (let path of Glob.sync(glob)) {
-				yield {
-					path,
-					content: fs.readFileSync(path),
-				}
-			}
-		})
-		return this
-	}
-
-	/**
-	 * Add a transformer to the pipeline.
-	 */
-	pipe(fn: Transformer) {
-		if (this.action !== null) {
-			throw new Error('Cannot pipe after series() or parallel()')
-		}
-
-		this.steps.push(fn)
-		return this
-	}
-
-	parallel(tasks: string[]) {
-		if (this.steps.length !== 0) {
-			throw new Error('Cannot use parallel() after other steps')
-		}
-
-		let parent = this
-		this.action = async () => {
-			let waso = parent.wasoInstance!
+	static parallel(tasks: string[]) {
+		let task = new Task()
+		task.action = async () => {
+			let waso = task.wasoInstance!
 			await Promise.all(tasks.map(t => waso.run(t)))
 		}
-		return this
+		return task
 	}
 
-	series(tasks: string[]) {
-		if (this.steps.length !== 0) {
-			throw new Error('Cannot use series() after other steps')
-		}
+	static series(tasks: string[]) {
+		let task = new Task()
 
-		let parent = this
-		this.action = async () => {
-			let waso = parent.wasoInstance!
+		task.action = async () => {
+			let waso = task.wasoInstance!
 			await tasks.reduce(
 				(p, t) => p.then(() => waso.run(t)),
 				Promise.resolve()
 			)
 		}
-		return this
+		return task
 	}
 
 	async run(waso: Waso) {

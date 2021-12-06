@@ -18,7 +18,7 @@ It is designed to revive the fluid nature of Makefiles in modern Node.js project
 Waso starts with a `waso.config.js` file in your project's root directory. It is a JavaScript file that exports an instance of the Waso class.
 
 ```js
-const Waso = require('waso')
+const { Waso, Task } = require('waso')
 
 const sass = require('waso-sass')
 const postcss = require('waso-postcss')
@@ -28,29 +28,30 @@ const autoprefixer = require('autoprefixer')
 const cssnano = require('cssnano')
 
 module.exports = new Waso({
-	_js: new Task()
-		.source('src/js/index.js')
-		.pipe(Waso.incremental({
+	_js: new Task([
+		Waso.source('src/js/index.js'),
+		Waso.incremental({
 			target: 'dist/js/',
-		}))
-		.pipe(rollup())
-		.pipe(Waso.target('dist/js/')),
+		}),
+		rollup(),
+		Waso.target('dist/js/'),
+	])
 
-	_css: new Task()
-		.source('src/css/index.scss')
-		.pipe(Waso.incremental({
+	_css: new Task([
+		Waso.source('src/css/index.scss'),
+		Waso.incremental({
 			target: 'dist/js/',
 			renamer: () => 'index.css',
-		}))
-		.pipe(sass())
-		.pipe(postcss([
+		}),
+		sass(),
+		postcss([
 			autoprefixer(),
 			cssnano(),
-		]))
-		.pipe(Waso.target('dist/css/')),
+		]),
+		Waso.target('dist/css/'),
+	])
 
-	default: new Task()
-		.series([ '_js', '_css' ]),
+	default: Task.series([ '_js', '_css' ]),
 })
 ```
 
