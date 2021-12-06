@@ -12,6 +12,6 @@ jobs:
           check-latest: true
 
       - run: npm i
-      - run: npx lerna bootstrap
+      - run: npx lerna bootstrap --no-ci
       - run: npx lerna run build
       - run: npx lerna run test
