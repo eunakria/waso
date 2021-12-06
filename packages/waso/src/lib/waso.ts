@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { performance } from 'perf_hooks'
 
 import C from 'ansi-colors'
 import Glob from 'glob'
