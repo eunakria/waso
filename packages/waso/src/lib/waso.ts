@@ -2,7 +2,7 @@ import fs from 'fs'
 import { performance } from 'perf_hooks'
 
 import C from 'ansi-colors'
-import Glob from 'glob'
+import chokidar from 'chokidar'
 
 import Transformers from './transformers'
 
@@ -53,14 +53,20 @@ class Waso {
 		return Object.keys(this.tasks).filter(i => !i.startsWith('_'))
 	}
 
-	async run(taskName: string = 'default') {
+	async run(taskName: string = 'default', ...args: any[]) {
+		let logInfo = ''
+		if (typeof args[0] === 'object' && 'logInfo' in args[0]) {
+			logInfo = ' ' + args[0].logInfo
+			args = args.slice(1)
+		}
+
 		this.logger.info(
-			C.bold(`Starting task ${C.green(taskName)}`)
+			C.bold(`Starting task ${C.green(taskName)}${logInfo}`)
 		)
 		let startTime = performance.now()
 
 		try {
-			await this.tasks[taskName].run(this)
+			await this.tasks[taskName].run(this, ...args)
 		} catch (ex) {
 			this.logger.error(C.bold.red(`Task ${C.green(taskName)} failed`))
 			if (!this.alreadyPrintedErrors) {
@@ -92,6 +98,7 @@ export type File = {
 export type Options = {
 	logger: Logger | null
 	sourceGlob: string[]
+	args?: any[]
 }
 type Transformer =
 	(input: AsyncGenerator<File>, options?: Options) => AsyncGenerator<File>
@@ -112,31 +119,60 @@ class Task {
 		this.action = null
 	}
 
-	static parallel(tasks: string[]) {
+	static parallel(tasks: (string | Task)[]) {
 		let task = new Task()
 		task.action = async () => {
 			let waso = task.wasoInstance!
-			await Promise.all(tasks.map(t => waso.run(t)))
+			await Promise.all(tasks.map(
+				t => t instanceof Task ? t.run(waso) : waso.run(t)
+			))
 		}
 		return task
 	}
 
-	static series(tasks: string[]) {
+	static series(tasks: (string | Task)[]) {
 		let task = new Task()
 
 		task.action = async () => {
 			let waso = task.wasoInstance!
 			await tasks.reduce(
-				(p, t) => p.then(() => waso.run(t)),
+				(p, t) => p.then(
+					() => t instanceof Task ? t.run(waso):  waso.run(t)
+				),
 				Promise.resolve()
 			)
 		}
 		return task
 	}
 
-	async run(waso: Waso) {
+	static watch(glob: string, task: string | Task) {
+		let taskObj = new Task()
+
+		taskObj.action = async () => {
+			let watcher = chokidar.watch(glob)
+			taskObj.wasoInstance!.logger.info(
+				C.bold(`Watching ${C.bold.yellow(glob)} for changes`)
+			)
+
+			watcher.on('change', (path: string) => {
+				let li = {
+					logInfo: `← ${C.bold.yellow(path)}`,
+				}
+				if (typeof task === 'string') {
+					taskObj.wasoInstance!.run(task, li, path)
+				} else {
+					taskObj.options.logger!.info(li.logInfo)
+					task.run(taskObj.wasoInstance!, path)
+				}
+			})
+		}
+		return taskObj
+	}
+
+	async run(waso: Waso, ...args: any[]) {
 		this.wasoInstance = waso
 		this.options.logger = waso.logger
+		this.options.args = args
 
 		if (this.action !== null) {
 			await this.action()

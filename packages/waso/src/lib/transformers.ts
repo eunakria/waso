@@ -10,7 +10,7 @@ const relativize = (filePath: string, options: Options) => {
 	// they assert. This is used to determine the most directories that can
 	// be trimmed off from the beginning of the file path.
 	let globBases = options.sourceGlob
-		.map(g => g.split('*')[0])
+		.map(g => path.dirname(g).split('*')[0])
 		.sort((a, b) =>
 			Array.from(b.matchAll(/\//g)).length -
 			Array.from(a.matchAll(/\//g)).length
@@ -32,7 +32,6 @@ function source(glob: string) {
 	return async function* sourceTransformer(
 		_files: AsyncGenerator<File>, options: Options
 	) {
-		console.log(`Reading from ${glob}`)
 		options.sourceGlob.push(glob)
 		for (let path of Glob.sync(glob)) {
 			yield {
@@ -143,15 +142,18 @@ function target(dir: string, doRelativize = true) {
 	return async function* targetTransformer(
 		files: AsyncGenerator<File>, options: Options
 	) {
-		console.log(`Writing to ${dir}`)
+		let noFiles = true
 		fs.mkdirSync(dir, { recursive: true })
 		for await (let file of files) {
+			noFiles = false
 			if (doRelativize) {
 				file.path = relativize(file.path, options)
 			}
-			console.log(`Writing ${file.path}`)
 			fs.writeFileSync(path.join(dir, file.path), file.content)
 			yield file
+		}
+		if (noFiles) {
+			options.logger!.warn(`No files to write to ${dir}`)
 		}
 	}
 }
