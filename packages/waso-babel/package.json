@@ -1,0 +1,22 @@
+{
+  "name": "waso-babel",
+  "version": "0.1.0",
+  "description": "Transform JavaScript files with Babel.",
+  "keywords": [],
+  "author": "Linus Parker",
+  "license": "MPL-2.0",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "node ./test/index.js"
+  },
+  "peerDependencies": {
+    "waso": "^0.2.0",
+    "@babel/core": "^7.0.0"
+  },
+  "devDependencies": {
+    "tape": "^5.3.2",
+    "waso": "file:../waso",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4"
+  }
+}
