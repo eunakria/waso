@@ -1,5 +1,7 @@
 # Waso
 
+<a href="https://npmjs.org/package/waso"><img src="https://img.shields.io/npm/v/waso.svg" alt="NPM Version"/></a>
+
 ⚠ **This software is a work in progress.** ⚠\
 It's not yet ready for production use, but feel free to give it a try and contribute with issues and pull requests!
 
@@ -63,9 +65,12 @@ Waso is driven by small scripts called transformers, generators which take an in
 
 | Package | Description |
 | ------- | ----------- |
-| [waso-sass](/packages/waso-sass) | Transform Sass and SCSS files into CSS files. |
-| [waso-postcss](/packages/waso-postcss) | Apply PostCSS transformations to CSS files. |
-| [waso-rollup](/packages/waso-rollup) | Bundle JavaScript files with Rollup. |
+| [waso-babel](/packages/waso-babel) <a href="https://npmjs.org/package/waso-babel"><img src="https://img.shields.io/npm/v/waso-babel.svg" alt="NPM Version"/></a> | Transform JavaScript files with Babel. |
+| [waso-postcss](/packages/waso-postcss) <a href="https://npmjs.org/package/waso-postcss"><img src="https://img.shields.io/npm/v/waso-postcss.svg" alt="NPM Version"/></a> | Apply PostCSS transformations to CSS files. |
+| [waso-rollup](/packages/waso-rollup) <a href="https://npmjs.org/package/waso-rollup"><img src="https://img.shields.io/npm/v/waso-rollup.svg" alt="NPM Version"/></a> | Bundle JavaScript files with Rollup. |
+| [waso-sass](/packages/waso-sass) <a href="https://npmjs.org/package/waso-sass"><img src="https://img.shields.io/npm/v/waso-sass.svg" alt="NPM Version"/></a> | Transform Sass and SCSS files into CSS files. |
+| [waso-terser](/packages/waso-terser) <a href="https://npmjs.org/package/waso-terser"><img src="https://img.shields.io/npm/v/waso-terser.svg" alt="NPM Version"/></a> | Minify JavaScript files with Terser. |
+| [waso-typescript](/packages/waso-typescript) <a href="https://npmjs.org/package/waso-typescript"><img src="https://img.shields.io/npm/v/waso-typescript.svg" alt="NPM Version"/></a> | Transform TypeScript files into JavaScript files. |
 
 ## Interested?
 
