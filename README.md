@@ -69,6 +69,7 @@ Waso is driven by small scripts called transformers, generators which take an in
 | [waso-postcss](/packages/waso-postcss) <a href="https://npmjs.org/package/waso-postcss"><img src="https://img.shields.io/npm/v/waso-postcss.svg" alt="NPM Version"/></a> | Apply PostCSS transformations to CSS files. |
 | [waso-rollup](/packages/waso-rollup) <a href="https://npmjs.org/package/waso-rollup"><img src="https://img.shields.io/npm/v/waso-rollup.svg" alt="NPM Version"/></a> | Bundle JavaScript files with Rollup. |
 | [waso-sass](/packages/waso-sass) <a href="https://npmjs.org/package/waso-sass"><img src="https://img.shields.io/npm/v/waso-sass.svg" alt="NPM Version"/></a> | Transform Sass and SCSS files into CSS files. |
+| [waso-svgo](/packages/waso-svgo) <a href="https://npmjs.org/package/waso-svgo"><img src="https://img.shields.io/npm/v/waso-svgo.svg" alt="NPM Version"/></a> | Compress SVG files with SVGO. |
 | [waso-terser](/packages/waso-terser) <a href="https://npmjs.org/package/waso-terser"><img src="https://img.shields.io/npm/v/waso-terser.svg" alt="NPM Version"/></a> | Minify JavaScript files with Terser. |
 | [waso-typescript](/packages/waso-typescript) <a href="https://npmjs.org/package/waso-typescript"><img src="https://img.shields.io/npm/v/waso-typescript.svg" alt="NPM Version"/></a> | Transform TypeScript files into JavaScript files. |
 

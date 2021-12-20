@@ -1,0 +1,12 @@
+{
+  "name": "waso-svgo",
+  "version": "0.1.0",
+  "description": "Compress SVG files with SVGO.",
+  "keywords": [],
+  "author": "Linus Parker",
+  "license": "MPL-2.0",
+  "main": "./src/index.js",
+  "peerDependencies": {
+    "svgo": "^2.0.0"
+  }
+}

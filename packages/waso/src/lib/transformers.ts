@@ -33,7 +33,7 @@ function source(glob: string) {
 		_files: AsyncGenerator<File>, options: Options
 	) {
 		options.sourceGlob.push(glob)
-		for (let path of Glob.sync(glob)) {
+		for (let path of Glob.sync(glob, { nodir: true })) {
 			yield {
 				path,
 				content: fs.readFileSync(path),
@@ -79,7 +79,7 @@ function incremental(
 		let newestInSrc = null
 		if (criteria.globSrc !== undefined) {
 			newestInSrc = -Infinity
-			for (let file of Glob.sync(criteria.globSrc)) {
+			for (let file of Glob.sync(criteria.globSrc, { nodir: true })) {
 				let inTime = fs.statSync(file).mtimeMs
 				if (inTime > newestInSrc) {
 					newestInSrc = inTime
@@ -149,6 +149,10 @@ function target(dir: string, doRelativize = true) {
 			if (doRelativize) {
 				file.path = relativize(file.path, options)
 			}
+
+			fs.mkdirSync(
+				path.dirname(path.join(dir, file.path)), { recursive: true }
+			)
 			fs.writeFileSync(path.join(dir, file.path), file.content)
 			yield file
 		}
