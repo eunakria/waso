@@ -135,7 +135,7 @@ function flatten() {
  * One of the built-in transformers, which outputs all the current files
  * to the output directory.
  * 
- * @param relativize If the input files are all from the same directory,
+ * @param doRelativize If the input files are all from the same directory,
  *   remove the directory prefix from the output files. Defaults to true.
  */
 function target(dir: string, doRelativize = true) {

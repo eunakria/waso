@@ -37,7 +37,7 @@ module.exports = new Waso({
 		}),
 		rollup(),
 		Waso.target('dist/js/'),
-	])
+	]),
 
 	_css: new Task([
 		Waso.source('src/css/index.scss'),
@@ -51,7 +51,7 @@ module.exports = new Waso({
 			cssnano(),
 		]),
 		Waso.target('dist/css/'),
-	])
+	]),
 
 	default: Task.series([ '_js', '_css' ]),
 })
